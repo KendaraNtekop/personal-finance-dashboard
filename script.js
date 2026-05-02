@@ -1,4 +1,5 @@
 let transactions = [];  //array to hold user transactions
+let currentType = 'expense';
 
 //read values from here
 const nameInput     = document.getElementById('tx-name');
@@ -12,7 +13,7 @@ const totalIncome   = document.getElementById('total-income');
 const totalExpense  = document.getElementById('total-expense');
 const totalBalance  = document.getElementById('total-balance');
 
-const addBtn        = document.getElementById('add-btn');
+
 
 //FUNCTIONS
 
@@ -50,3 +51,35 @@ if (name === '') {
   amountInput.value = '';
 
 }
+
+currentType = 'expense';
+
+function setType(type) {
+    currentType = type;
+    const expenseBtn = document.getElementById('btn-expense');
+    const incomeBtn  = document.getElementById('btn-income');
+    expenseBtn.classList.remove('active');
+  incomeBtn.classList.remove('active');
+
+  if (type === 'expense') {
+    expenseBtn.classList.add('active');
+  } else {
+    incomeBtn.classList.add('active');
+  }
+
+  if (type === 'income') {
+    categoryInput.value = 'income';
+  } else if (categoryInput.value === 'income') {
+    categoryInput.value = 'food'; // reset to default expense cat
+  }
+
+}
+
+nameInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    addTransaction();
+  }
+});
+
+dateInput.value = new Date().toISOString().split('T')[0];
+
