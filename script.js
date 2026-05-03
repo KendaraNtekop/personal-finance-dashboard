@@ -94,27 +94,20 @@ function renderList() {
       </div>`;
     return;
   }
-// This is where we build the HTML string.
-  // We start empty and add to it in the loop.
+
   let html = '';
 
-  // Loop through every transaction in the array
   transactions.forEach(function(tx) {
 
-    // Look up the category display data
-    // If category doesn't exist, fall back to 'other'
+ 
     const meta = CAT_META[tx.category] || CAT_META.other;
 
-    // Income gets a + sign, expense gets a − sign
     const sign = tx.type === 'income' ? '+' : '−';
 
-    // Format the amount with ₦ and commas
-    // e.g. 45000 becomes ₦45,000
+   
     const formattedAmount = '₦' + tx.amount.toLocaleString('en-NG');
 
-    // Build the HTML for this one transaction
-    // Notice we use tx.name, tx.amount etc —
-    // pulling data OUT of the object
+    
 
      html += `
       <div class="tx-item" id="tx-${tx.id}">
@@ -150,6 +143,7 @@ function renderList() {
 }
 
 
+
 function deleteTransaction(id) {
 
   transactions = transactions.filter(function(tx) {
@@ -160,6 +154,56 @@ function deleteTransaction(id) {
   renderList();
   updateSummary();
 }
+
+// Calculates income, expenses and balance
+
+function updateSummary() {
+
+  
+  const incomeTransactions  = transactions.filter(function(tx) {
+    return tx.type === 'income';
+  });
+
+  const expenseTransactions = transactions.filter(function(tx) {
+    return tx.type === 'expense';
+  });
+
+
+  const totalIncomeAmount  = incomeTransactions.reduce(function(sum, tx) {
+    return sum + tx.amount;
+  }, 0);
+  // if there are no income transactions, reduce returns 0 ✅
+
+  const totalExpenseAmount = expenseTransactions.reduce(function(sum, tx) {
+    return sum + tx.amount;
+  }, 0);
+
+  const balance = totalIncomeAmount - totalExpenseAmount;
+
+
+  
+  const fmt = function(amount) {
+    return '₦' + Math.abs(amount).toLocaleString('en-NG');
+  };
+  
+
+  totalIncome.textContent  = fmt(totalIncomeAmount);
+  totalExpense.textContent = fmt(totalExpenseAmount);
+  totalBalance.textContent = fmt(balance);
+
+
+  
+
+  if (balance > 0) {
+    totalBalance.style.color = '#0F5E3A';   
+  } else if (balance < 0) {
+    totalBalance.style.color = '#8B2020';   
+  } else {
+    totalBalance.style.color = '';          
+  }
+}
+
+
 
 
 nameInput.addEventListener('keydown', function(e) {
