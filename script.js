@@ -17,6 +17,8 @@ const totalBalance  = document.getElementById('total-balance');
 
 //FUNCTIONS
 
+
+//ADD TRANSACTION
 function addTransaction() {
 const name     = nameInput.value.trim();
 const amount   = parseFloat(amountInput.value);
@@ -54,6 +56,8 @@ if (name === '') {
 
 currentType = 'expense';
 
+
+//SETS TYPE OF TRANSACTION - INCOME OR EXPENSE
 function setType(type) {
     currentType = type;
     const expenseBtn = document.getElementById('btn-expense');
@@ -75,6 +79,8 @@ function setType(type) {
 
 }
 
+
+//OBJECT LIST FOR RENDERING
 const CAT_META = {
   food      : { label: 'Food',         icon: '🍽', bg: '#FEF3DC', color: '#7A4A00' },
   transport : { label: 'Transport',    icon: '🚌', bg: '#E3F5F1', color: '#0A5247' },
@@ -84,6 +90,8 @@ const CAT_META = {
   other     : { label: 'Other',        icon: '📌', bg: '#F0EFE9', color: '#5F5E5A' },
 };
 
+
+//RENDER FUNCTION - DISPLAYS TRANSACTION ON SCREEN, LOOPS THROUGH EACH TRANSACTION AND BUILDS HTML
 function renderList() {
 
   if (transactions.length === 0) {
@@ -143,7 +151,7 @@ function renderList() {
 }
 
 
-
+//DELETE TRANSACTION FUNCTION
 function deleteTransaction(id) {
 
   transactions = transactions.filter(function(tx) {
@@ -155,7 +163,7 @@ function deleteTransaction(id) {
   updateSummary();
 }
 
-// Calculates income, expenses and balance
+// CALCULATES INCOME, SPENT AND BALANCE
 
 function updateSummary() {
 
