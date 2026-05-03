@@ -49,6 +49,11 @@ if (name === '') {
   renderList();     // redraws the transaction list
   updateSummary();  // recalculates the totals
 
+transactions.unshift(newTransaction);
+renderList();
+updateSummary();
+renderRecentList(); 
+
   nameInput.value   = '';
   amountInput.value = '';
 
@@ -221,4 +226,84 @@ nameInput.addEventListener('keydown', function(e) {
 });
 
 dateInput.value = new Date().toISOString().split('T')[0];
+
+// NAVIGATION — show and hide views
+
+function showView(viewName, btn) {
+
+  document.querySelectorAll('.view').forEach(function(view) {
+    view.classList.remove('active');
+  });
+
+  document.querySelectorAll('.nav-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+
+  document.getElementById('view-' + viewName).classList.add('active');
+
+  // Highlight the clicked nav button
+  if (btn) btn.classList.add('active');
+
+  // If switching to overview, refresh the recent list
+  if (viewName === 'overview') {
+    renderRecentList();
+  }
+}
+
+
+// RECENT LIST — shows last 3 on overview page
+
+function renderRecentList() {
+  const recentList = document.getElementById('recent-list');
+
+  if (transactions.length === 0) {
+    recentList.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">₦</span>
+        <p>No transactions yet.</p>
+      </div>`;
+    return;
+  }
+
+  
+  const recent = transactions.slice(0, 3);
+  let html = '';
+
+  recent.forEach(function(tx) {
+    const meta = CAT_META[tx.category] || CAT_META.other;
+    const sign = tx.type === 'income' ? '+' : '−';
+    const formattedAmount = '₦' + tx.amount.toLocaleString('en-NG');
+
+    html += `
+      <div class="tx-item">
+        <div class="tx-icon" style="background:${meta.bg}">${meta.icon}</div>
+        <div class="tx-body">
+          <div class="tx-name">${tx.name}</div>
+          <div class="tx-meta">
+            <span class="tx-cat-tag"
+              style="background:${meta.bg}; color:${meta.color}">
+              ${meta.label}
+            </span>
+            <span class="tx-date">${tx.date}</span>
+          </div>
+        </div>
+        <div class="tx-amount ${tx.type}">
+          ${sign}${formattedAmount}
+        </div>
+      </div>`;
+  });
+
+  recentList.innerHTML = html;
+}
+
+
+// SET TODAY'S DATE in the topbar
+
+document.getElementById('topbar-date').textContent =
+  new Date().toLocaleDateString('en-NG', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 

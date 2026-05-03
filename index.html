@@ -1,95 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Transaction Log — Kendara Finance Dashboard</title>
-<link rel="stylesheet" href="styles.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kendara — Finance Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
+
 <div class="page">
-     <div class="page-header">
-    <h1>Transaction Log</h1>
-    <p>Track every naira in and out</p>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="avatar">KR</div>
+      <div>
+        <div class="greeting">Hi, Kendara 👋</div>
+        <div class="topbar-sub">Personal Finance Dashboard</div>
+      </div>
+    </div>
+    <div class="topbar-date" id="topbar-date"></div>
   </div>
- 
-  <div class="summary-row">
-    <div class="summary-card income">
-      <div class="label">Total income</div>
-      <div class="value" id="total-income">₦0</div>
+
+
+  <!-- NAVIGATION -->
+  <nav class="main-nav">
+    <button class="nav-btn active" onclick="showView('overview', this)">Overview</button>
+    <button class="nav-btn" onclick="showView('transactions', this)">Transactions</button>
+    <button class="nav-btn" onclick="showView('savings', this)">Savings</button>
+    <button class="nav-btn" onclick="showView('expenses', this)">Expenses</button>
+  </nav>
+
+
+  <!-- VIEW 1 — OVERVIEW -->
+  <div class="view active" id="view-overview">
+
+    <div class="page-header">
+      <h1>Overview</h1>
+      <p>Your financial snapshot for this month</p>
     </div>
-    <div class="summary-card expense">
-      <div class="label">Total spent</div>
-      <div class="value" id="total-expense">₦0</div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row">
+      <div class="summary-card income">
+        <div class="label">Total income</div>
+        <div class="value" id="total-income">₦0</div>
+      </div>
+      <div class="summary-card expense">
+        <div class="label">Total spent</div>
+        <div class="value" id="total-expense">₦0</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Balance</div>
+        <div class="value" id="total-balance">₦0</div>
+      </div>
     </div>
-    <div class="summary-card">
-      <div class="label">Balance</div>
-      <div class="value" id="total-balance">₦0</div>
+
+    <!-- Recent Transactions Preview -->
+    <div class="log-section">
+      <div class="log-header">
+        <h2>Recent transactions</h2>
+        <button class="view-all-btn" onclick="showView('transactions',
+          document.querySelector('[onclick*=transactions]'))">
+          View all →
+        </button>
+      </div>
+      <!-- Shows last 3 transactions — powered by JS -->
+      <div class="tx-list" id="recent-list">
+        <div class="empty-state">
+          <span class="icon">₦</span>
+          <p>No transactions yet.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!--  VIEW 2 — TRANSACTIONS -->
+  <div class="view" id="view-transactions">
+
+    <div class="page-header">
+      <h1>Transactions</h1>
+      <p>Track every naira in and out</p>
+    </div>
+
+    <!-- Add Transaction Form -->
+    <div class="add-section">
+      <h2>Add transaction</h2>
+
+      <div class="type-toggle">
+        <button class="type-btn expense-btn active" id="btn-expense"
+          onclick="setType('expense')">— Expense</button>
+        <button class="type-btn income-btn" id="btn-income"
+          onclick="setType('income')">+ Income</button>
+      </div>
+
+      <div class="form-grid-3">
+        <div class="field">
+          <label>Description</label>
+          <input type="text" id="tx-name" placeholder="e.g. Transport fare" />
+        </div>
+        <div class="field">
+          <label>Amount (₦)</label>
+          <input type="number" id="tx-amount" placeholder="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="tx-date" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Category</label>
+          <select id="tx-category">
+            <option value="food">Food</option>
+            <option value="transport">Transport</option>
+            <option value="airtime">Data / Airtime</option>
+            <option value="leisure">Leisure</option>
+            <option value="income">Allowance / Income</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="add-btn" onclick="addTransaction()">Add transaction</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Transaction List -->
+    <div class="log-section">
+      <div class="log-header">
+        <h2>All transactions</h2>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+          <button class="filter-btn" onclick="setFilter('income', this)">Income</button>
+          <button class="filter-btn" onclick="setFilter('expense', this)">Expenses</button>
+        </div>
+      </div>
+      <div class="tx-list" id="tx-list">
+        <div class="empty-state">
+          <span class="icon">₦</span>
+          <p>No transactions yet.<br/>Add your first one above.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- VIEW3 - SAVINGS -->
+  <div class="view" id="view-savings">
+    <div class="page-header">
+      <h1>Savings Goals</h1>
+      <p>Track progress toward your targets</p>
+    </div>
+    <div class="coming-soon">
+      
     </div>
   </div>
- 
-  <div class="add-section">
-    <h2>Add transaction</h2>
- 
-    <div class="type-toggle">
-      <button class="type-btn expense-btn active" id="btn-expense" onclick="setType('expense')">— Expense</button>
-      <button class="type-btn income-btn" id="btn-income" onclick="setType('income')">+ Income</button>
+
+
+  
+    <!-- VIEW4 - EXPENSES -->
+  <div class="view" id="view-expenses">
+    <div class="page-header">
+      <h1>Expenses</h1>
+      <p>See where your money is going</p>
     </div>
- 
-    <div class="form-grid-3">
-      <div class="field">
-        <label>Description</label>
-        <input type="text" id="tx-name" placeholder="e.g. Transport fare" />
-      </div>
-      <div class="field">
-        <label>Amount (₦)</label>
-        <input type="number" id="tx-amount" placeholder="0" min="0" />
-      </div>
-      <div class="field">
-        <label>Date</label>
-        <input type="date" id="tx-date" />
-      </div>
-    </div>
- 
-    <div class="form-grid">
-      <div class="field">
-        <label>Category</label>
-        <select id="tx-category">
-          <option value="food">Food</option>
-          <option value="transport">Transport</option>
-          <option value="airtime">Data / Airtime</option>
-          <option value="leisure">Leisure</option>
-          <option value="income">Allowance / Income</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>&nbsp;</label>
-        <button class="add-btn" onclick="addTransaction()">Add transaction</button>
-      </div>
+    <div class="coming-soon">
+      
     </div>
   </div>
- 
-  <div class="log-section">
-    <div class="log-header">
-      <h2>All transactions</h2>
-      <div class="filter-row">
-        <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
-        <button class="filter-btn" onclick="setFilter('income', this)">Income</button>
-        <button class="filter-btn" onclick="setFilter('expense', this)">Expenses</button>
-      </div>
-    </div>
-    <div class="tx-list" id="tx-list">
-      <div class="empty-state">
-        <span class="icon">₦</span>
-        <p>No transactions yet.<br/>Add your first one above.</p>
-      </div>
-    </div>
-  </div>
- 
+
+
 </div>
+
 <script src="script.js"></script>
-</body>
 </body>
 </html>
