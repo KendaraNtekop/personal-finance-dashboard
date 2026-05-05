@@ -152,17 +152,118 @@
   </div>
 
 
-    <!-- VIEW3 - SAVINGS -->
-  <div class="view" id="view-savings">
-    <div class="page-header">
-      <h1>Savings Goals</h1>
-      <p>Track progress toward your targets</p>
-    </div>
-    <div class="coming-soon">
-      
-    </div>
+    <!-- ============================
+     VIEW 3 — SAVINGS
+============================= -->
+<div class="view" id="view-savings">
+
+  
+  <div class="page-header">
+    <h1>Savings Goals</h1>
+    <p>Set a target and track your progress</p>
   </div>
 
+
+  <!-- ==========================
+       FORM SECTION
+        ========================== -->
+  <div class="add-section">
+
+
+    <!-- FORM 1 — Creates a new goal -->
+    <!-- User gives it a name and a target amount -->
+    <h2>Add New Goal</h2>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Goal Name</label>
+        
+        <input type="text" id="goal-name"
+               placeholder="e.g. Laptop fund" />
+      </div>
+
+      <div class="field">
+        <label>Target Amount (₦)</label>
+        <input type="number" id="goal-target"
+               placeholder="0" min="0" />
+      </div>
+
+    </div>
+
+    
+    <div class="field">
+      <label>&nbsp;</label>
+      <button class="add-btn" onclick="addGoal()">
+        Add Goal
+      </button>
+    </div>
+
+
+    <hr style="margin: 1.25rem 0; border: none;
+                border-top: 1px solid var(--border);">
+
+
+    <!-- FORM 2 — Logs money toward an existing goal -->
+    <!-- You pick which goal, then enter how much
+         you're adding to it today -->
+    <h2>Log Savings</h2>
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Select Goal</label>
+        
+        <select id="goal-select">
+          <option value="">-- choose a goal --</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Amount to Add (₦)</label>
+        
+        <input type="number" id="savings-amount"
+               placeholder="0" min="0" />
+      </div>
+
+    </div>
+
+    
+    <div class="field">
+      <label>&nbsp;</label>
+      <button class="add-btn" onclick="logSavings()">
+        Log Savings
+      </button>
+    </div>
+
+
+  </div>
+
+
+  <!-- ==========================
+       GOALS LIST
+       This is where goal cards render.
+       Same pattern as tx-list in transactions —
+       starts with empty state, JS fills it in.
+  ========================== -->
+  <div class="log-section">
+
+    <div class="log-header">
+      <h2>My Goals</h2>
+    </div>
+
+    
+    <div id="goals-list">
+      <div class="empty-state">
+        <span class="icon">🎯</span>
+        <p>No goals yet.<br/>Add your first one above.</p>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
 
   
     <!-- VIEW4 - EXPENSES -->

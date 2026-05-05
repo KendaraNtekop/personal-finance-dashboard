@@ -1,4 +1,5 @@
 let transactions = [];  //array to hold user transactions
+let savingsGoals = [];
 let currentType = 'expense';
 
 //read values from here
@@ -20,12 +21,12 @@ const totalBalance  = document.getElementById('total-balance');
 
 //ADD TRANSACTION
 function addTransaction() {
-const name     = nameInput.value.trim();
-const amount   = parseFloat(amountInput.value);
-const date     = dateInput.value;
-const category = categoryInput.value;
+  const name     = nameInput.value.trim();
+  const amount   = parseFloat(amountInput.value);
+  const date     = dateInput.value;
+  const category = categoryInput.value;
 
-if (name === '') {
+  if (name === '') {
     alert('Please enter a description');
     return;   
   }
@@ -36,7 +37,7 @@ if (name === '') {
   }
 
   const newTransaction = {
-    id       : Date.now(),  // unique number based on time
+    id       : Date.now(),
     name     : name,
     amount   : amount,
     date     : date,
@@ -44,19 +45,14 @@ if (name === '') {
     type     : currentType  
   };
 
+  // ✅ Each of these appears ONCE only
   transactions.unshift(newTransaction);
-
-  renderList();     // redraws the transaction list
-  updateSummary();  // recalculates the totals
-
-transactions.unshift(newTransaction);
-renderList();
-updateSummary();
-renderRecentList(); 
+  renderList();
+  updateSummary();
+  renderRecentList();
 
   nameInput.value   = '';
   amountInput.value = '';
-
 }
 
 currentType = 'expense';
@@ -294,6 +290,133 @@ function renderRecentList() {
   });
 
   recentList.innerHTML = html;
+}
+
+function addGoal() {
+  const name   = document.getElementById('goal-name').value.trim();
+const amount = parseFloat(document.getElementById('goal-target').value);
+
+  if (name === '') {
+    alert('Please enter a description');
+    return;   
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('Please enter a valid amount');
+    return;
+  }
+
+  const newGoal = {
+    id       : Date.now(),
+    name     : name,
+    target   : amount,
+    saved    : 0 
+  };
+
+  // ✅ Each of these appears ONCE only
+  savingsGoals.unshift(newGoal);
+  
+  renderGoals();
+
+   document.getElementById('goal-name').value   = '';
+  document.getElementById('goal-target').value = '';
+}
+
+function renderGoals() {
+
+  
+  const select = document.getElementById('goal-select');
+  select.innerHTML = '<option value="">-- choose a goal --</option>';
+
+  savingsGoals.forEach(function(goal) {
+    const option = document.createElement('option');
+    option.value = goal.id;
+    option.textContent = goal.name;
+    select.appendChild(option);
+  });
+
+
+  const container = document.getElementById('goals-list');
+
+  if (savingsGoals.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">🎯</span>
+        <p>No goals yet.<br/>Add your first one above.</p>
+      </div>`;
+    return;
+  }
+
+  
+  let html = '';
+
+  savingsGoals.forEach(function(goal) {
+
+    const percentage = Math.min((goal.saved / goal.target) * 100, 100);
+    const savedFmt   = '₦' + goal.saved.toLocaleString('en-NG');
+    const targetFmt  = '₦' + goal.target.toLocaleString('en-NG');
+
+    html += `
+      <div class="tx-item">
+
+        <div class="tx-body">
+          <div class="tx-name">${goal.name}</div>
+          <div class="tx-meta">
+            <span class="tx-date">${savedFmt} saved of ${targetFmt}</span>
+          </div>
+          <div class="goal-track">
+            <div class="goal-fill" style="width: ${percentage}%"></div>
+          </div>
+          <div class="goal-pct">${Math.round(percentage)}% complete</div>
+        </div>
+
+        <div class="tx-amount income">${savedFmt}</div>
+
+        <button class="tx-delete" onclick="deleteGoal(${goal.id})">✕</button>
+
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function logSavings() {
+
+  
+  const goalId = document.getElementById('goal-select').value;
+  const amount = parseFloat(document.getElementById('savings-amount').value);
+
+  
+  if (goalId === '') {
+    alert('Please select a goal');
+    return;
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    alert('Please enter a valid amount');
+    return;
+  }
+
+  
+  const myGoal = savingsGoals.find(function(goal) {
+    return goal.id === Number(goalId);
+  });
+
+  
+  myGoal.saved += amount;
+
+  
+  renderGoals();
+  document.getElementById('savings-amount').value = '';
+  document.getElementById('goal-select').value = '';
+}
+
+
+function deleteGoal(id) {
+  savingsGoals = savingsGoals.filter(function(goal) {
+    return goal.id !== id;
+  });
+  renderGoals();
 }
 
 

@@ -469,6 +469,27 @@
     income:     { bg: #E8F5EE; color: #0F5E3A; }
     other:      { bg: #F0EFE9; color: #444441; }
   }
+
+  .goal-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.goal-fill {
+  height: 100%;
+  background: #1D9E75;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.goal-pct {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
  
   @media (max-width: 520px) {
     .form-grid-3 { grid-template-columns: 1fr 1fr; }
