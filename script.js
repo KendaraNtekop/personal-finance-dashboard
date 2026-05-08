@@ -50,6 +50,7 @@ function addTransaction() {
   renderList();
   updateSummary();
   renderRecentList();
+  renderExpenses();
 
   nameInput.value   = '';
   amountInput.value = '';
@@ -244,6 +245,9 @@ function showView(viewName, btn) {
   if (viewName === 'overview') {
     renderRecentList();
   }
+  if (viewName === 'expenses') {
+  renderExpenses();
+}
 }
 
 
@@ -409,6 +413,127 @@ function logSavings() {
   renderGoals();
   document.getElementById('savings-amount').value = '';
   document.getElementById('goal-select').value = '';
+}
+
+
+// ============================================
+// RENDER EXPENSES PAGE
+// Reads from transactions array — no new data needed
+// Called when user clicks the Expenses nav button
+// ============================================
+function renderExpenses() {
+
+  // STEP 1: get expenses only
+  const expenseTransactions = transactions.filter(function(tx) {
+    return tx.type === 'expense';
+  });
+
+  // STEP 2: grab the container + handle empty state
+  const container = document.getElementById('expenses-list');
+
+  if (expenseTransactions.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">📊</span>
+        <p>No expenses yet.<br/>Add transactions to see your breakdown.</p>
+      </div>`;
+
+    // Reset summary cards to default
+    document.getElementById('expenses-total').textContent   = '₦0';
+    document.getElementById('expenses-top-cat').textContent = '—';
+    return;
+  }
+
+  // STEP 3: calculate total spent
+  // reduce() collapses the whole array into one number
+  const totalSpent = expenseTransactions.reduce(function(sum, tx) {
+    return sum + tx.amount;
+  }, 0);
+
+  // STEP 4: group amounts by category
+  // we build an object where each key is a category
+  // and the value is the total spent in that category
+  const categoryTotals = {};
+
+  expenseTransactions.forEach(function(tx) {
+    if (!categoryTotals[tx.category]) {
+      categoryTotals[tx.category] = 0;
+    }
+    categoryTotals[tx.category] += tx.amount;
+  });
+
+  // STEP 5: find the biggest category
+  // for...in loops through object keys
+  // we keep track of whichever has the highest amount
+  let maxCategory = '';
+  let maxAmount   = 0;
+
+  for (let category in categoryTotals) {
+    if (categoryTotals[category] > maxAmount) {
+      maxAmount   = categoryTotals[category];
+      maxCategory = category;
+    }
+  }
+
+  // STEP 6: write totals into the summary cards
+  // fmt formats the number with ₦ and commas
+  const fmt = function(amount) {
+    return '₦' + amount.toLocaleString('en-NG');
+  };
+
+  document.getElementById('expenses-total').textContent =
+    fmt(totalSpent);
+
+  // CAT_META gives us the pretty label for the category name
+  // e.g. 'food' becomes 'Food'
+  document.getElementById('expenses-top-cat').textContent =
+    maxCategory ? CAT_META[maxCategory].label : '—';
+
+  // STEP 7: build the category bar cards
+  let html = '';
+
+  for (let category in categoryTotals) {
+
+    const amount     = categoryTotals[category];
+    const meta       = CAT_META[category] || CAT_META.other;
+
+    // percentage of total spending this category represents
+    // same maths as savings goals progress bar
+    const percentage = Math.round((amount / totalSpent) * 100);
+
+    html += `
+      <div class="tx-item">
+
+        <div class="tx-body">
+
+          <div class="tx-name">
+            ${meta.icon} ${meta.label}
+          </div>
+
+          <div class="tx-meta">
+            <span class="tx-date">${percentage}% of total spending</span>
+          </div>
+
+          <!-- bar fills based on % of total spending -->
+          <div class="goal-track">
+            <div class="goal-fill"
+              style="width: ${percentage}%;
+                     background: ${meta.color};">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- amount on the right -->
+        <div class="tx-amount expense">
+          ${fmt(amount)}
+        </div>
+
+      </div>`;
+  }
+
+  // STEP 8: stamp everything onto the page
+  container.innerHTML = html;
 }
 
 
